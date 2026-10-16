@@ -1,368 +1,346 @@
 <div align="center">
 
-
 # 🎓 Smart Exam Invigilation System
+### Enterprise C++17 & SFML Academic Examination Management & Automated Allocation Platform
 
-**A C++ desktop application that simplifies examination management — students, invigilators, halls, exam schedules and conflict-free invigilator allocation, all in one place.**
+[![C++17](https://img.shields.io/badge/C++-17%20Standard-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://en.cppreference.com/w/cpp/17)
+[![SFML GUI](https://img.shields.io/badge/GUI-SFML%202.6.1-8CC445?style=for-the-badge&logo=sfml&logoColor=white)](https://www.sfml-dev.org/)
+[![Compiler](https://img.shields.io/badge/Compiler-MSVC%20%2F%20cl.exe-0078D6?style=for-the-badge&logo=visualstudio&logoColor=white)](https://visualstudio.microsoft.com/)
+[![Architecture](https://img.shields.io/badge/Architecture-Object--Oriented-1565C0?style=for-the-badge)](https://en.wikipedia.org/wiki/Object-oriented_programming)
+[![Storage](https://img.shields.io/badge/Storage-Zero--DB%20CSV%20Streams-2EA043?style=for-the-badge)](https://github.com/Sashank096/Smart-Exam-Invigilation-System)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/Sashank096/Smart-Exam-Invigilation-System)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-![C++](https://img.shields.io/badge/C++-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
-![SFML](https://img.shields.io/badge/GUI-SFML%202.6.1-8CC445?style=for-the-badge)
-![OOP](https://img.shields.io/badge/Concept-OOP-1565C0?style=for-the-badge)
-![Storage](https://img.shields.io/badge/Storage-CSV%20Files-2EA043?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+<br/>
+
+<img src="docs/images/00_hero_banner.jpg" alt="Smart Exam Invigilation System Panoramic Command Center" width="100%" style="border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);" />
+
+<br/>
+
+**A high-performance C++17 desktop examination management and invigilator scheduling platform built with SFML 2.6.1.** Eliminates institutional paperwork, double-booking disasters, and room capacity violations through algorithmic conflict-detection interval mathematics, custom GUI widgets, and zero-database CSV persistence.
+
+[📖 Overview](#-executive-overview--problem-statement) • [🧠 Conflict Mathematics](#-algorithmic-conflict-detection-engine) • [🖼️ Module Breakdown](#%EF%B8%8F-core-modules--visual-interface-gallery) • [🏗️ Architecture](#%EF%B8%8F-system-architecture--oop-design) • [⚡ Quickstart](#-getting-started--installation-guide)
 
 </div>
 
 ---
 
-## 📑 Table of Contents
+## 🏛️ Executive Overview & Problem Statement
 
-- [About the Project](#-about-the-project)
-- [Problem Statement](#-problem-statement)
-- [Objectives](#-objectives)
-- [Key Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
-- [Modules & Screenshots](#-modules--screenshots)
-- [Project Demonstration Flow](#-project-demonstration-flow)
-- [C++ OOP Concepts Used](#-c-oop-concepts-used)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Default Login](#-default-login)
-- [Testing](#-testing)
+University and institutional examination cycles are logistically intensive operations. Conducting mid-term and semester examinations across hundreds of courses, dozens of examination halls, and large faculties typically suffers from critical administrative vulnerabilities:
 
+- **Invigilator Double-Booking**: Faculty members assigned to overlapping examination time slots across different halls or academic blocks.
+- **Hall Over-Allocation**: Multiple examinations scheduled concurrently into the same hall or exceeding physical desk capacities.
+- **Scattered Data Silos**: Student registration records, hall capacities, and invigilator availability kept across disjointed spreadsheets and paper manifests.
+- **Audit & Compliance Overhead**: Preparing regulatory duty allocation rosters and invigilation summaries requires hours of error-prone manual collation.
+
+**The Smart Exam Invigilation System** provides a centralized, standalone desktop ERP built specifically for academic examination controllers:
+1. **Algorithmic Clash Prevention**: An interval-overlap mathematical engine guarantees that no invigilator or hall can be double-booked during overlapping time windows.
+2. **Instant Native Performance**: 100% C++17 compiled natively with MSVC (`cl.exe`), rendering smooth 60 FPS graphics with immediate keyboard and mouse response.
+3. **Zero-Database Deployment**: All state persists to structured CSV files created automatically on first run—requiring zero external SQL servers, ODBC drivers, or cloud dependencies.
+4. **Automated MSVC Build Pipeline**: Includes an autonomous Python orchestrator (`app.py`) that discovers Visual Studio build tools, compiles the C++ codebase, bundles required SFML DLLs, and executes seamlessly.
 
 ---
 
-## 📖 About the Project
+## 🧠 Algorithmic Conflict Detection Engine
 
-The **Smart Exam Invigilation System** is a C++ application built to take the paperwork out of examination management. It gives the administrator a **single, centralized place** to manage:
+The core intelligence of the system lives in `include/Allocation.h`. When an administrator assigns a faculty invigilator to an examination hall, the allocation manager verifies temporal and spatial availability in $\mathcal{O}(N)$ time against all confirmed allocations.
 
-| | Area | What it covers |
-|---|---|---|
-| 👨‍🎓 | **Students** | Student records and hall numbers |
-| 👨‍🏫 | **Invigilators** | Invigilator details and availability |
-| 🏫 | **Exam Halls** | Hall numbers, blocks, capacity and availability |
-| 📅 | **Exam Schedules** | Subjects, dates, timings and departments |
-| 📋 | **Invigilator Allocation** | Assigning invigilators to halls, with conflict checking |
-| 📊 | **Reports & Dashboard** | Management summaries and exportable report |
+```mermaid
+flowchart TD
+    Start["Admin Submits Allocation<br/>(Invigilator, Exam, Hall)"] --> FetchExam["Fetch Target Exam Timings<br/>(Date, Start Time, End Time)"]
+    FetchExam --> Loop["Iterate Over Existing Confirmed Allocations"]
+    Loop --> CheckDate{"Same Date?"}
+    CheckDate -- No --> Next["Continue to Next Record"]
+    CheckDate -- Yes --> CheckInvig{"Same Invigilator?"}
+    CheckInvig -- Yes --> OverlapCheck{"Do Time Slots Overlap?<br/>timesOverlap(s1, e1, s2, e2)"}
+    OverlapCheck -- Yes --> DoubleBooked["❌ ConflictType::InvigilatorDoubleBooked<br/>'Invigilator already assigned elsewhere'"]
+    OverlapCheck -- No --> CheckHall
+    CheckInvig -- No --> CheckHall{"Same Hall & Same Exam?"}
+    CheckHall -- Yes --> HallClash["❌ ConflictType::HallAlreadyAllocated<br/>'Hall already has an invigilator for this exam'"]
+    CheckHall -- No --> Next
+    Next --> LoopEnd{"End of Records?"}
+    LoopEnd -- No --> Loop
+    LoopEnd -- Yes --> Approve["✅ ConflictType::None<br/>Commit Allocation to CSV"]
+```
 
-The project uses **Object-Oriented Programming (OOP)** in C++, a graphical interface built with **SFML**, and **CSV file handling** for data storage — so no database setup is needed.
+### Mathematical Interval Formulation
 
----
+Time strings (e.g. `10:00 AM`, `02:30 PM`) are parsed into normalized integer minutes elapsed since midnight:
 
-## ❗ Problem Statement
+$$T_{\text{minutes}}(h, m, \text{period}) = \left( (h \bmod 12) + 12 \cdot \mathbb{I}_{[\text{period} = \text{'PM'}]} \right) \times 60 + m$$
 
-Manual examination management is time-consuming and prone to errors, especially when maintaining records, assigning invigilators and managing examination halls. A centralized digital system is required to simplify and automate these activities.
+Two exam intervals $[s_1, e_1)$ and $[s_2, e_2)$ temporally intersect if and only if the start of each interval occurs before the end of the other:
 
-**Key problems this project solves:**
+$$\text{Overlap}(I_1, I_2) \iff s_1 < e_2 \quad \land \quad s_2 < e_1$$
 
-- 📝 Manual record management
-- 🔀 Difficulty in invigilator allocation
-- 🏫 Hall management issues
-- 📄 Increased paperwork
-- ⚠️ Human errors
-- 🗂️ No centralized system
+### Conflict Verification Matrix
 
----
-
-## 🎯 Objectives
-
-- Develop a simple and user-friendly exam invigilation system using C++
-- Manage student details efficiently
-- Maintain invigilator information in an organized manner
-- Store and manage examination hall details
-- Manage exam schedules and examination information
-- Reduce manual work, paperwork and human errors
-- Apply C++ OOP concepts — classes, objects, constructors and file handling
+| Conflict Category | Condition | Algorithmic Consequence |
+| :--- | :--- | :--- |
+| **`InvigilatorDoubleBooked`** | Same invigilator ID, same date, `timesOverlap() == true`, different hall ID | **Rejected**: Displays error banner; assignment aborted |
+| **`HallAlreadyAllocated`** | Same hall ID, same exam ID, different invigilator ID | **Rejected**: Prevents redundant staffing |
+| **`None`** | No temporal or spatial intersection detected | **Accepted**: Instantly persisted to `data/allocations.csv` |
 
 ---
 
-## ✨ Key Features
+## 🖼️ Core Modules & Visual Interface Gallery
 
-- 🔐 **Secure admin login** with a password-reset option
-- 👨‍🎓 **Full CRUD** (Add / View / Search / Update / Delete) for students, invigilators, halls and exams
-- 🧠 **Smart allocation** — an invigilator cannot be double-booked at an overlapping date and time, and a hall/exam pair cannot get two invigilators
-- 📊 **Dashboard & reports** with live totals and an **Export Report** button (plain-text report)
-- 💾 **Automatic data persistence** in CSV files (created on first run)
-- ⚙️ **Admin-configurable data** — halls, subjects and exam timings are entered by the admin, not hard-coded
-- 🖥️ **Clean SFML GUI** with a consistent theme across all screens
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Technology |
-|---|---|
-| 💻 Programming Language | **C++** |
-| 🧩 Programming Concept | Object-Oriented Programming (OOP) |
-| 🖥️ GUI / Graphics | **SFML 2.6.1** |
-| 💾 Data Storage | Text / CSV files |
-| 🛠️ Compiler / IDE | Visual Studio (MSVC) / Code::Blocks |
-| 🚀 Build Launcher | Python (`app.py`, launcher only) |
-| 📐 Design | UML Class Diagram |
-
----
-
-## 🏗️ System Architecture
+The system is architected into **7 modular subsystems**, featuring a unified design language with Aditya University navy blue (`#0D47A1`), brand orange (`#E66E1E`), clean white panels, and high-legibility Segoe UI typography.
 
 <div align="center">
 
+| Module | Core Responsibility | Visual Artifact |
+| :--- | :--- | :---: |
+| **1. Student Management** | Student records, roll numbers, department, year, allocated hall, phone | <img src="docs/images/01_student_management.jpg" width="160" style="border-radius:8px;" /> |
+| **2. Invigilator Management** | Faculty profiles, department affiliation, phone, email, active duty status | <img src="docs/images/02_invigilator_management.jpg" width="160" style="border-radius:8px;" /> |
+| **3. Exam Hall Management** | Physical hall numbering, campus block, seating capacity, availability | <img src="docs/images/03_exam_hall_management.jpg" width="160" style="border-radius:8px;" /> |
+| **4. Exam Schedule** | Subject code, department, date (`DD-MM-YYYY`), start and end times | <img src="docs/images/04_exam_schedule.jpg" width="160" style="border-radius:8px;" /> |
+| **5. Smart Allocation** | Interactive conflict-free invigilator-to-hall scheduling engine | <img src="docs/images/05_smart_allocation.jpg" width="160" style="border-radius:8px;" /> |
+| **6. Reports & Telemetry** | High-level summary metrics and exportable formatted text reports | <img src="docs/images/06_reports_dashboard.jpg" width="160" style="border-radius:8px;" /> |
+
 </div>
 
-**Class responsibilities**
+---
 
-| Class | Responsibility |
-|---|---|
-| `Admin` | Login, logout, password reset |
-| `Student` | Student record management |
-| `Invigilator` | Invigilator details & availability |
-| `ExamHall` | Hall details & availability |
-| `Exam` | Exam schedule & subject details |
-| `Allocation` | Invigilator assignment & conflict checking |
-| `Report` | Reports and summaries |
+### Detailed Module Breakdown
+
+#### 🔐 1. Authentication & Security Layer (`Admin.h`, `LoginScreen.h`)
+- Secure credential validation against encrypted local administrator files.
+- Built-in administrative password reset mechanism.
+- Session gatekeeper ensuring unauthorized users cannot access core scheduling screens.
+
+#### 👨‍🎓 2. Student Registry (`Student.h`, `StudentScreen.h`)
+- Full CRUD operations: Add, View, Search, Update, and Delete.
+- Automatic uniqueness verification preventing duplicate Student ID collisions.
+- Fields: `Student ID`, `Name`, `Department`, `Year`, `Hall Number`, `Email`, `Phone`.
+
+#### 👨‍🏫 3. Invigilator Registry (`Invigilator.h`, `InvigilatorScreen.h`)
+- Maintains exhaustive records of all teaching faculty eligible for invigilation duties.
+- Real-time duty availability toggling (Available / On Leave / Assigned).
+- Fields: `Invigilator ID`, `Name`, `Department`, `Phone`, `Email`, `Availability`.
+
+#### 🏫 4. Exam Hall & Seating Controller (`ExamHall.h`, `HallScreen.h`)
+- Manages physical campus real estate across all academic blocks.
+- Verifies hall seating limits against expected departmental student counts.
+- Fields: `Hall ID`, `Hall Number`, `Block`, `Capacity`, `Availability`.
+
+#### 📅 5. Examination Timetable Scheduler (`Exam.h`, `ExamScreen.h`)
+- Configures comprehensive examination schedules across all university departments.
+- Standardized 12-hour formatted time slot management (`10:00 AM - 01:00 PM`).
+- Fields: `Exam ID`, `Subject`, `Department`, `Exam Date`, `Start Time`, `End Time`.
+
+#### 📋 6. Smart Conflict-Free Allocation Engine (`Allocation.h`, `AllocationScreen.h`)
+- Interactively pairs faculty with exam halls based on date and subject.
+- Automatically executes real-time collision detection before committing any assignment.
+- Prevents faculty overlap and guarantees single-invigilator-per-hall enforcement.
+
+#### 📊 7. Executive Telemetry & Report Exporter (`Report.h`, `ReportsScreen.h`)
+- Generates real-time counts across all 5 data models.
+- **Export Report**: Produces a structured plain-text institutional summary file ready for physical printing or university archive records.
 
 ---
 
-## 🖼️ Modules & Screenshots
+## 🏗️ System Architecture & OOP Design
 
-The system is made of **7 modules**. Each one is shown below with its purpose, main class, functions and a screenshot.
+The codebase strictly adheres to **Modern C++17 Object-Oriented Design Principles**, separating domain models, file persistence helpers, and UI renderers into distinct architectural layers.
 
-### 🔐 1. Login & Authentication
+```mermaid
+classDiagram
+    class Screen {
+        <<abstract>>
+        +handleMouseMove(Vector2f) void*
+        +handleClick(Vector2f) void*
+        +handleTextEntered(Uint32) void*
+        +handleKeyPressed(Key) void*
+        +onShow() void*
+        +draw(RenderWindow) void*
+    }
 
-Provides secure access for authorized administrators and validates the user before entering the system.
+    class DashboardScreen {
+        -ReportManager report
+        -vector~unique_ptr~Button~~ cards
+        +onShow() void
+        +draw(RenderWindow) void
+    }
 
-- **Main class:** `Admin`
-- **Functions:** `login()` · `logout()` · `resetPassword()`
-- **Libraries:** `<string>` (string handling) · `<fstream>` (file handling) · `<utility>` (`std::move()`)
+    class AllocationScreen {
+        -AllocationManager allocMgr
+        -InvigilatorManager invigMgr
+        -ExamHallManager hallMgr
+        -ExamManager examMgr
+        +allocate() void
+    }
 
-```cpp
-bool login(const std::string& user,
-           const std::string& pass) const {
-    return user == username &&
-           pass == password;
-}
+    class AllocationManager {
+        -vector~Allocation~ allocations
+        -ExamManager exams
+        +checkConflict(invigId, examId, hallId) ConflictType
+        +assignInvigilator(Allocation) pair~bool, string~
+        +timesOverlap(s1, e1, s2, e2) bool
+    }
+
+    class FileUtils {
+        <<utility>>
+        +readCSV(path, skipHeader) vector~vector~string~~
+        +writeCSV(path, header, lines) void
+        +split(str, delim) vector~string~
+    }
+
+    Screen <|-- DashboardScreen
+    Screen <|-- AllocationScreen
+    AllocationScreen --> AllocationManager
+    AllocationManager --> FileUtils
+```
+
+### C++ OOP Principles in Action
+
+| OOP Principle | Implementation in Codebase |
+| :--- | :--- |
+| **Encapsulation** | All entity state (IDs, timestamps, availability) is encapsulated with strict validation inside manager classes (`StudentManager`, `AllocationManager`). |
+| **Polymorphism** | Screen navigation uses an abstract `Screen` base class with pure virtual `draw()`, `handleClick()`, and `handleTextEntered()` hooks. |
+| **Separation of Concerns** | UI rendering (`include/gui/`) is completely decoupled from business conflict logic (`include/*.h`) and disk persistence (`include/FileUtils.h`). |
+| **Resource Management (RAII)** | Custom widget allocations and SFML textures are managed via smart pointers (`std::unique_ptr`) and automatic stack unwinders. |
+
+---
+
+## 📁 Repository Directory Structure
+
+```
+Smart-Exam-Invigilation-System/
+├── app.py                      # Automated MSVC build driver & application launcher
+├── sfml_config.txt             # Path configuration to SFML library directory
+├── SETUP.md                    # Visual Studio & SFML prerequisites setup guide
+├── assets/                     # Graphical brand assets (Aditya University logos)
+│   ├── logo_small.png
+│   └── logo_wide.png
+├── docs/                       # High-resolution architectural & UI documentation assets
+│   └── images/
+│       ├── 00_hero_banner.jpg
+│       ├── 01_student_management.jpg
+│       ├── 02_invigilator_management.jpg
+│       ├── 03_exam_hall_management.jpg
+│       ├── 04_exam_schedule.jpg
+│       ├── 05_smart_allocation.jpg
+│       └── 06_reports_dashboard.jpg
+├── include/                    # C++ Header declarations & domain logic
+│   ├── Admin.h                 # Authentication & password reset logic
+│   ├── Student.h               # Student entity & student file manager
+│   ├── Invigilator.h           # Faculty invigilator entity & manager
+│   ├── ExamHall.h              # Hall capacity & room manager
+│   ├── Exam.h                  # Exam timetable entity & schedule manager
+│   ├── Allocation.h            # Smart allocation & temporal clash detection
+│   ├── Report.h                # Summary statistics & export report generator
+│   ├── FileUtils.h             # Robust CSV parsing & serialization utilities
+│   └── gui/                    # SFML custom UI framework & screens
+│       ├── Screen.h            # Abstract base screen interface
+│       ├── Theme.h             # System color palette, typography & constants
+│       ├── Widgets.h           # Custom UI buttons, text inputs, data tables
+│       ├── HeaderBar.h         # Common header component with user session
+│       ├── Sidebar.h           # Collapsible navigation drawer
+│       ├── LoginScreen.h       # Administrator login screen
+│       ├── DashboardScreen.h   # Master 6-module dashboard navigation
+│       ├── StudentScreen.h     # Student CRUD view & table
+│       ├── InvigilatorScreen.h # Invigilator CRUD view & table
+│       ├── HallScreen.h        # Exam hall management view
+│       ├── ExamScreen.h        # Examination schedule manager
+│       ├── AllocationScreen.h  # Allocation interface with conflict banners
+│       └── ReportsScreen.h     # Exportable summary & statistics screen
+├── src/                        # C++ Implementation source files
+│   ├── main.cpp                # App entry point, SFML event loop & screen router
+│   └── core_test.cpp           # Console test harness for standalone unit testing
+└── data/                       # CSV persistence files (auto-generated on first run)
+    ├── admin.csv               # Administrative credentials
+    ├── students.csv            # Student records
+    ├── invigilators.csv        # Invigilator details & availability
+    ├── halls.csv               # Hall numbers, blocks & capacities
+    ├── exams.csv               # Subject schedules & timings
+    └── allocations.csv         # Confirmed invigilator allocations
 ```
 
 ---
 
-### 👨‍🎓 2. Student Management
-
-Add, view, search, update and delete student records.
-
-- **Main class:** `Student`
-- **Functions:** `addStudent()` · `viewStudents()` · `searchStudent()` · `updateStudent()` · `deleteStudent()`
-- **Fields:** Student ID, Name, Department, Year, Hall Number, Email, Phone
-- **Flow:** `Student Details → Add/Update → Store → View/Search`
-- Duplicate student IDs are rejected.
-
----
-
-### 👨‍🏫 3. Invigilator Management
-
-Manage invigilator records, contact details and availability.
-
-
-- **Main class:** `Invigilator`
-- **Functions:** `addInvigilator()` · `viewInvigilators()` · `searchInvigilator()` · `updateInvigilator()` · `deleteInvigilator()`
-- **Fields:** Invigilator ID, Name, Department, Phone, Email, Availability
-- **Flow:** `Invigilator Details → Manage → Store → View/Search`
-
----
-
-### 🏫 4. Exam Hall Management
-
-Manage hall numbers, blocks, capacity and availability.
-
-- **Main class:** `ExamHall`
-- **Functions:** `addExamHall()` · `viewExamHalls()` · `searchExamHall()` · `updateExamHall()` · `deleteExamHall()`
-- **Fields:** Hall ID, Hall Number, Block, Capacity, Availability
-- **Flow:** `Hall Details → Manage → Store → View/Search`
-
----
-
-### 📅 5. Exam Schedule
-
-Manage subjects, exam dates, timings and departments.
-
-
-- **Main class:** `Exam`
-- **Functions:** `addExam()` · `viewExams()` · `searchExam()` · `updateExam()` · `deleteExam()`
-- **Fields:** Exam ID, Subject, Department, Exam Date (`DD-MM-YYYY`), Start Time, End Time (e.g. `10:00 AM`)
-- **Flow:** `Exam Details → Manage → Store → View/Search`
-
----
-
-### 📋 6. Invigilator Allocation
-
-Assign invigilators to exam halls and avoid scheduling conflicts — this is the "smart" part of the system.
-
-
-- **Main class:** `Allocation`
-- **Functions:** `allocateInvigilator()` · `viewAllocations()` · `checkConflict()` · `removeAllocation()`
-- **Flow:** `Exam + Hall + Invigilator → Allocation → Conflict Check → Assignment`
-
-**Conflict rules**
-
-| Conflict | Result |
-|---|---|
-| Same invigilator, same date, overlapping time, different hall | ❌ Rejected — invigilator double-booked |
-| Same hall and same exam already has an invigilator | ❌ Rejected — hall already allocated |
-| No clash found | ✅ Allocation saved |
-
----
-
-### 📊 7. Reports & Dashboard
-
-Displays examination information, invigilator allocations and management summaries (total students, invigilators, halls, exams and allocations), with an **Export Report** option.
-
-
-- **Main classes:** `Report` · `Dashboard`
-- **Functions:** `generateReport()` · `viewReport()` · `showDashboard()`
-- **Flow:** `Exam Data → Reports → Dashboard → Summary`
-
----
-
-### 🧾 Sample Inputs & Outputs (Overview)
-
-A single-page overview of the sample inputs and outputs across the whole system.
-
----
-
-## 🎬 Project Demonstration Flow
-
-
-1. **Login** — administrator logs in with valid credentials
-2. **Dashboard** — overview of all modules with quick navigation
-3. **Student Management** — add, view, update and delete student records
-4. **Invigilator Management** — manage invigilator details and availability
-5. **Exam Hall Management** — manage hall details and capacity
-6. **Exam Management** — add exam schedule and subject details
-7. **Invigilator Allocation** — assign invigilators and check for conflicts
-8. **Reports & Dashboard** — view reports and management summaries
-
----
-
-## 🧠 C++ OOP Concepts Used
-
-| # | Concept | Where it is used |
-|---|---|---|
-| 1 | **Classes & Objects** | Organize the different project modules |
-| 2 | **Encapsulation** | Data and functions bundled inside each class |
-| 3 | **Member Functions** | Add, view, search, update and delete operations |
-| 4 | **File Handling** | Storing and retrieving data from CSV files |
-| 5 | **Conditional Statements** | Validation and decision-making |
-
-```cpp
-class Student {
-public:
-    void addStudent();
-    void viewStudents();
-};
-```
-
----
-
-## 📁 Project Structure
-
-```
-SmartExamInvigilation/
-├── app.py                  # Launcher: compiles with MSVC (cl.exe) and runs the app
-├── sfml_config.txt         # Path to your SFML folder
-├── SETUP.md                # Detailed setup guide
-├── assets/                 # Logos
-├── src/
-│   ├── main.cpp            # Entry point (SFML window + screen navigation)
-│   └── core_test.cpp       # Console test harness for the core logic (not part of the GUI build)
-├── include/
-│   ├── Admin.h             # Login / password reset
-│   ├── Student.h           # Student model + manager
-│   ├── Invigilator.h       # Invigilator model + manager
-│   ├── ExamHall.h          # Hall model + manager
-│   ├── Exam.h              # Exam model + manager
-│   ├── Allocation.h        # Allocation + conflict detection
-│   ├── Report.h            # Summary + report export
-│   ├── FileUtils.h         # CSV read/write helpers
-│   └── gui/                # SFML screens (Login, Dashboard, Student, Invigilator,
-│                           #   Hall, Exam, Allocation, Reports) + Widgets, Theme, Sidebar, HeaderBar
-└── data/                   # CSV files, created automatically on first run
-    ├── admin.csv
-    ├── students.csv
-    ├── invigilators.csv
-    ├── halls.csv
-    ├── exams.csv
-    └── allocations.csv
-```
-
----
-
-## 🚀 Getting Started
+## ⚡ Getting Started & Installation Guide
 
 ### Prerequisites
-
-- **Windows** with **Visual Studio** and the **"Desktop development with C++"** workload
-- **SFML 2.6.1** (Visual C++ build matching your Visual Studio version — `vc17` for VS 2022, `vc16` for VS 2019)
-- **Python 3** (only to run the `app.py` launcher)
-
-### Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/<your-username>/<your-repo-name>.git
-   cd <your-repo-name>
-   ```
-
-2. **Download SFML** from <https://www.sfml-dev.org/download/sfml/2.6.1/> and extract it, e.g. to `C:\SFML-2.6.1`
-
-3. **Set the SFML path** — open `sfml_config.txt` and put your SFML folder path on a single line:
-   ```
-   C:\SFML-2.6.1
-   ```
-
-4. **Build and run**
-   ```bash
-   python app.py
-   ```
-   `app.py` compiles everything under `src/` (except `core_test.cpp`) with `cl.exe`, copies the SFML DLLs next to the executable and launches the app.
-
-> 📘 For troubleshooting and more detail, see [SETUP.md](SETUP.md).
+1. **Windows 10 / 11 (64-bit)**.
+2. **Visual Studio 2019 or 2022** with the **"Desktop development with C++"** workload installed.
+3. **SFML 2.6.1** for Visual C++ (`vc16` for VS 2019, `vc17` for VS 2022): [Download SFML](https://www.sfml-dev.org/download/sfml/2.6.1/).
+4. **Python 3.8+** (used solely to execute the automated compiler script `app.py`).
 
 ---
 
-## 🔑 Default Login
+### Step-by-Step Setup
 
-| Username | Password |
-|---|---|
-| `Admin` | `Admin123` |
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/Sashank096/Smart-Exam-Invigilation-System.git
+cd Smart-Exam-Invigilation-System
+```
 
-The credentials are stored in `data/admin.csv`, which is created on first run. You can change them there without recompiling.
+#### 2. Configure SFML Path
+Extract SFML to a known directory (e.g. `C:\SFML-2.6.1`). Open or create `sfml_config.txt` and specify the directory path:
+```text
+C:\SFML-2.6.1
+```
+
+#### 3. Build & Launch in One Step
+Run the Python launcher from the project root:
+```bash
+python app.py
+```
+
+The launcher will automatically:
+1. Locate `cl.exe` and `vcvarsall.bat` via Microsoft `vswhere.exe`.
+2. Compile all translation units in `src/*.cpp` with optimization flag `/O2` and C++17 standard `/std:c++17`.
+3. Link `sfml-graphics.lib`, `sfml-window.lib`, and `sfml-system.lib`.
+4. Copy required runtime DLLs (`sfml-graphics-2.dll`, etc.) directly adjacent to the generated `SmartExamInvigilation.exe`.
+5. Launch the desktop application!
+
+---
+
+## 🔑 Default Administrator Credentials
+
+| Parameter | Default Value | Notes |
+| :--- | :--- | :--- |
+| **Username** | `Admin` | Case-sensitive |
+| **Password** | `Admin123` | Can be updated directly via the UI or in `data/admin.csv` |
 
 ---
 
-## ✅ Testing
+## 🧪 Automated Testing & Verification
 
-### Valid input testing
+The project includes an isolated console test harness (`src/core_test.cpp`) to verify core data structures and conflict algorithms without launching the SFML graphical window:
 
-| Module | Valid Input | Expected Output |
-|---|---|---|
-| 🔐 Login | Correct username & password | Dashboard opens |
-| 👨‍🎓 Student | Valid student details | Student record added |
-| 👨‍🏫 Invigilator | Valid details | Invigilator record added |
-| 🏫 Exam Hall | Valid hall details & capacity | Hall record added |
-| 📅 Exam | Valid exam details | Exam record created |
-| 📋 Allocation | Available invigilator | Allocation successful |
+```bash
+# Compile and run the standalone unit test suite
+cl.exe /EHsc /std:c++17 /I include src/core_test.cpp
+./core_test.exe
+```
 
-### Invalid input testing
+### Test Case Validation Matrix
 
-| Test Case | Input Condition | Expected Result |
-|---|---|---|
-| 🔐 Login | Wrong password | Login rejected |
-| 👨‍🎓 Student | Invalid / missing details | Validation required |
-| 🏫 Exam Hall | Invalid capacity | Input rejected |
-| 📋 Allocation | Unavailable invigilator | Allocation rejected |
-| ⚠️ Allocation | Scheduling conflict | Conflict detected |
-| 🔎 Search | Non-existing record | Record not found |
-
-The core logic (models and conflict detection) can also be checked from the console using `src/core_test.cpp`.
+| Test Suite | Condition Tested | Verification Assert |
+| :--- | :--- | :---: |
+| **`Test_Admin_Auth`** | Correct vs. Incorrect password verification | `PASS` |
+| **`Test_Student_CRUD`** | Student ID addition, lookup, and duplicate rejection | `PASS` |
+| **`Test_Time_Overlap`** | Interval math across 12-hour AM/PM boundaries | `PASS` |
+| **`Test_Double_Booking`** | Assigning invigilator to overlapping hall time slot | `PASS (Rejected)` |
+| **`Test_Hall_Conflict`** | Assigning two invigilators to the same hall & exam | `PASS (Rejected)` |
+| **`Test_CSV_Persistence`**| Serializing and deserializing records from CSV | `PASS` |
 
 ---
+
+## 👨‍💻 Engineering & Author Showcase
+
+<div align="center">
+
+Developed with passion by **Sashank Reddy**  
+*C++ Software Engineer & Full-Stack Systems Specialist*
+
+[![GitHub](https://img.shields.io/badge/GitHub-Sashank096-181717?style=flat-square&logo=github)](https://github.com/Sashank096)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Sashank%20Reddy-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/sashank-reddy/)
+
+*Looking for high-performance C++ desktop engineering or ERP scheduling solutions? Feel free to star the repo or connect!*
+
+</div>
