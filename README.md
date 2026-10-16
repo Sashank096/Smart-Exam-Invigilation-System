@@ -336,11 +336,9 @@ cl.exe /EHsc /std:c++17 /I include src/core_test.cpp
 <div align="center">
 
 Developed with passion by **Sashank Reddy**  
-*C++ Software Engineer & Full-Stack Systems Specialist*
 
 [![GitHub](https://img.shields.io/badge/GitHub-Sashank096-181717?style=flat-square&logo=github)](https://github.com/Sashank096)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Sashank%20Reddy-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/sashank-reddy/)
 
-*Looking for high-performance C++ desktop engineering or ERP scheduling solutions? Feel free to star the repo or connect!*
 
 </div>
